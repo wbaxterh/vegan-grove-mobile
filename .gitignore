@@ -42,3 +42,4 @@ secrets/
 
 # husky runtime
 .husky/_/
+.impeccable
