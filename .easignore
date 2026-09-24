@@ -1,0 +1,33 @@
+# Mirrors .gitignore. When this file exists EAS uses it INSTEAD of .gitignore,
+# so keep the two in sync.
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+ios/
+android/
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.DS_Store
+.env*
+!.env.example
+secrets/
+*.tsbuildinfo
+.husky/_/
+
+# Not needed on the build server
+.git/
+.github/
+.vscode/
+.husky/

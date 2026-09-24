@@ -1,0 +1,62 @@
+{
+  "cli": {
+    "version": ">= 24.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "node": "24.20.0"
+    },
+    "preview": {
+      "distribution": "internal",
+      "node": "24.20.0"
+    },
+    "production": {
+      "node": "24.20.0",
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
+    "testflight": {
+      "extends": "production",
+      "distribution": "store",
+      "node": "24.20.0",
+      "ios": {
+        "autoIncrement": true
+      },
+      "env": {
+        "EXPO_NO_DOTENV": "1"
+      }
+    },
+    "playstore": {
+      "extends": "production",
+      "distribution": "store",
+      "node": "24.20.0",
+      "android": {
+        "buildType": "app-bundle",
+        "autoIncrement": true
+      },
+      "env": {
+        "EXPO_NO_DOTENV": "1",
+        "NODE_ENV": "production"
+      }
+    }
+  },
+  "submit": {
+    "testflight": {
+      "ios": {
+        "ascAppId": "REPLACE_WITH_APP_STORE_CONNECT_APP_ID",
+        "appleTeamId": "REPLACE_WITH_APPLE_TEAM_ID"
+      }
+    },
+    "playstore": {
+      "android": {
+        "serviceAccountKeyPath": "./secrets/play-service-account.json",
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
+    }
+  }
+}
