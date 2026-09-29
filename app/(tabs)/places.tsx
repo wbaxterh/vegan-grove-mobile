@@ -132,7 +132,10 @@ export default function PlacesScreen() {
               onPress={() => {
                 setSelectedId(item.id);
                 setView('map');
-                cameraRef.current?.flyTo({ center: item.location.coordinates, zoom: 14 });
+                cameraRef.current?.flyTo({
+                  center: [item.location.lng, item.location.lat],
+                  zoom: 14,
+                });
               }}
             />
           )}

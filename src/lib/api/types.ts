@@ -92,8 +92,9 @@ export interface NotificationPreferences {
 
 /** GeoJSON Point: `[longitude, latitude]`. */
 export interface GeoPoint {
-  type: 'Point';
-  coordinates: [number, number];
+  /** The API serializes locations as { lng, lat }; GeoJSON stays inside the database. */
+  lng: number;
+  lat: number;
 }
 
 /** Map query bounds. The only location shape the client ever sends. */

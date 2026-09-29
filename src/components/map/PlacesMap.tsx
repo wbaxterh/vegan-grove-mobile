@@ -85,7 +85,7 @@ export function PlacesMap({
           <Marker
             key={place.id}
             id={place.id}
-            lngLat={place.location.coordinates}
+            lngLat={[place.location.lng, place.location.lat]}
             anchor="center"
             selected={selected}
             onPress={() => onSelect(place)}
