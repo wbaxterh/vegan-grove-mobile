@@ -107,6 +107,7 @@ export interface Bbox {
 
 export type PlaceType =
   | 'sanctuary'
+  | 'garden'
   | 'restaurant'
   | 'cafe'
   | 'grocery'
@@ -116,27 +117,59 @@ export type PlaceType =
 
 export type VeganLevel = 'full' | 'options';
 
+/** Which vegan levels a places query includes. */
+export type VeganLevelFilter = VeganLevel | 'all';
+
+/** Filters shared by the map-pins and list queries. Sent only as query parameters. */
+export interface PlaceFilters {
+  veganLevel: VeganLevelFilter;
+  /** Empty means every type. */
+  types: PlaceType[];
+  /** Chains (an OSM brand tag) are demoted: hidden unless asked for, never removed. */
+  includeChains: boolean;
+}
+
 export interface Place {
   id: string;
   name: string;
   slug: string;
   type: PlaceType;
   veganLevel: VeganLevel;
+  /** True when the source carries a brand tag. Hidden by default, never removed. */
+  chain: boolean;
   location: GeoPoint;
   address: string;
   city: string;
+  postcode?: string | null;
   area: HomeArea;
+  phone?: string | null;
   website?: string | null;
   hours?: string | null;
   tags: string[];
   description: string;
   photoKeys: string[];
   approvalStatus: 'private' | 'pending' | 'approved' | 'rejected';
-  source: 'osm' | 'user' | 'curated';
+  /** Source id (spec section 9): osm, curated, user, bot:<name>, and so on. */
+  source?: string;
   ratingAvg: number;
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
+}
+
+/** The marker record from the map-pins route: enough to draw and select, nothing more. */
+export interface MapPin {
+  id: string;
+  slug: string;
+  name: string;
+  type: PlaceType;
+  veganLevel: VeganLevel;
+  chain: boolean;
+  location: GeoPoint;
+}
+
+export interface MapPinsResponse {
+  items: MapPin[];
 }
 
 export interface PlaceInput {
@@ -219,7 +252,7 @@ export interface EventsQuery {
 
 export interface PlacesQuery {
   bbox: Bbox;
-  type?: PlaceType;
+  filters: PlaceFilters;
   q?: string;
   cursor?: string;
 }

@@ -120,7 +120,7 @@ eas-build-pre-install.sh EAS lifecycle hook that runs the release guard on store
 ## What works today
 
 - Auth screens call the API and store the session: email and password register and login, and magic link (request by email or arrive through the deep link and verify). `AuthGate` restores on cold start, re-validates on foreground, and only a real `401` ends a session; a flaky network never logs a member out.
-- Places: the MapLibre map centered on Southern California, markers from `GET /api/places?bbox=` through TanStack Query as the viewport settles, a list toggle, and a center-on-me action that moves the camera and nothing else.
+- Places: the MapLibre map centered on Southern California. Markers come from `GET /api/places/map-pins?bbox=` (id, name, type, level, chain, location only) and the list from `GET /api/places?bbox=`, both through TanStack Query as the viewport settles and both under the same filters: fully vegan by default, vegan options and chains opt-in, type chips with sanctuaries and gardens first. Tapping a marker opens a sheet with hours, phone, website, and OpenStreetMap attribution. A list toggle and a center-on-me action that moves the camera and nothing else.
 - Profile stack: view, edit (handle, home area, interests through `PATCH /api/me`), the two privacy switches, settings (theme, push permission, log out), and account (sessions list with revoke, hard delete behind a double confirmation).
 - Companion: the modal streams replies from `POST /api/companion/chat` over SSE.
 - Notifications: the in-app soft-ask, the OS prompt only after a yes, token registration on sign-in and foreground, unregistration before logout.

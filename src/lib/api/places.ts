@@ -1,14 +1,20 @@
 /**
- * Places routes. The list query takes a bounding box, which is the only
- * location shape the app ever sends (privacy rule 3).
+ * Places routes. Every read takes a bounding box, which is the only location
+ * shape the app ever sends (privacy rule 3), plus the shared filters.
+ *
+ * Two reads back the Places tab: `map-pins` is the small record for markers
+ * and refetches on every pan; `places` is the full page for the list and the
+ * sheet. Same bbox, same filters, so the two never disagree.
  */
 
 import { ENDPOINTS } from '@/constants/api';
 import { api } from './client';
 import type {
   Bbox,
+  MapPinsResponse,
   Page,
   Place,
+  PlaceFilters,
   PlaceInput,
   PlaceReview,
   PlaceReviewInput,
@@ -20,9 +26,45 @@ export function bboxParam(bbox: Bbox): string {
   return [bbox.west, bbox.south, bbox.east, bbox.north].map((n) => n.toFixed(5)).join(',');
 }
 
+/** Query-string form of the shared filters. `types` is left off when it means every type. */
+export function filterParams(filters: PlaceFilters) {
+  return {
+    veganLevel: filters.veganLevel,
+    types: filters.types.length > 0 ? filters.types.join(',') : undefined,
+    includeChains: filters.includeChains,
+  };
+}
+
+/** Stable cache-key fragment for the filters, independent of chip tap order. */
+export function filtersKey(filters: PlaceFilters): string {
+  return [
+    filters.veganLevel,
+    [...filters.types].sort().join(','),
+    filters.includeChains ? 'chains' : 'nochains',
+  ].join('|');
+}
+
 export function listPlaces(query: PlacesQuery, signal?: AbortSignal): Promise<Page<Place>> {
   return api.get<Page<Place>>(ENDPOINTS.places.list, {
-    query: { bbox: bboxParam(query.bbox), type: query.type, q: query.q, cursor: query.cursor },
+    query: {
+      bbox: bboxParam(query.bbox),
+      ...filterParams(query.filters),
+      q: query.q,
+      cursor: query.cursor,
+    },
+    skipAuth: true,
+    signal,
+  });
+}
+
+/** Markers only. Same bbox and filters as the list, a fraction of the payload. */
+export function fetchMapPins(
+  bbox: Bbox,
+  filters: PlaceFilters,
+  signal?: AbortSignal,
+): Promise<MapPinsResponse> {
+  return api.get<MapPinsResponse>(ENDPOINTS.places.mapPins, {
+    query: { bbox: bboxParam(bbox), ...filterParams(filters) },
     skipAuth: true,
     signal,
   });

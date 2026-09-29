@@ -19,7 +19,8 @@
  *    directly in a component.
  * 4. `accent` (magenta) is for one emphasis per screen at most: a live badge, a
  *    highlighted count, a "new" marker. Never for buttons or body text.
- * 5. `accent2` (cyan) is for links and focus rings only.
+ * 5. `accent2` (cyan) is for links, focus rings, and the vegan-options map marker
+ *    (fully vegan is green, options is cyan, so the level reads at a glance).
  * 6. `danger` is for errors and destructive actions only.
  * 7. Monospace is a system font (Menlo on iOS, `monospace` on Android). No font
  *    files, no font CDNs, no `expo-font`.

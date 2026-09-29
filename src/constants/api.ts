@@ -32,6 +32,7 @@ export const ENDPOINTS = {
   stats: '/stats',
   places: {
     list: '/places',
+    mapPins: '/places/map-pins',
     detail: (slug: string) => `/places/${slug}`,
     create: '/places',
     reviews: (id: string) => `/places/${id}/reviews`,
