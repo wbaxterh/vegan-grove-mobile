@@ -93,6 +93,7 @@ function ThemedStack() {
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="profile" />
+        <Stack.Screen name="media" />
         <Stack.Screen
           name="companion"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}

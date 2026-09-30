@@ -65,7 +65,7 @@ export default function HomeScreen() {
           label="Your grove feed"
           onPress={() => router.push('/(tabs)/feed')}
         />
-        <LoopStep step="learn" label="Ask Ivy" onPress={() => router.push('/companion')} />
+        <LoopStep step="learn" label="Watch and learn" onPress={() => router.push('/media')} />
       </View>
 
       <Card>
@@ -76,6 +76,7 @@ export default function HomeScreen() {
         </Text>
       </Card>
 
+      <Button label="Ask Ivy" variant="secondary" onPress={() => router.push('/companion')} />
       <Button
         label="Profile and settings"
         variant="secondary"

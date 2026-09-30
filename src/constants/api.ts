@@ -28,6 +28,8 @@ export const ENDPOINTS = {
     sessions: '/me/sessions',
     session: (id: string) => `/me/sessions/${id}`,
     notificationPreferences: '/me/notification-preferences',
+    /** The member's saved titles, newest first. Private to the member. */
+    watchlist: '/me/watchlist',
   },
   stats: '/stats',
   places: {
@@ -87,9 +89,17 @@ export const ENDPOINTS = {
     create: '/conversations',
     messages: (id: string) => `/conversations/${id}/messages`,
   },
+  /** Media library (MEDIA-CONTRACT section 10.2). */
   media: {
+    home: '/media/home',
     list: '/media',
+    collections: '/media/collections',
+    collection: (slug: string) => `/media/collections/${slug}`,
     detail: (slug: string) => `/media/${slug}`,
+    related: (slug: string) => `/media/${slug}/related`,
+    save: (id: string) => `/media/${id}/save`,
+    reactions: (id: string) => `/media/${id}/reactions`,
+    reaction: (id: string, type: string) => `/media/${id}/reactions/${type}`,
   },
   guides: {
     list: '/guides',

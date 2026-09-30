@@ -274,3 +274,145 @@ export interface CompanionConversation {
   pinned: boolean;
   expiresAt?: string | null;
 }
+
+/*
+ * Media library (MEDIA-CONTRACT section 10.1). These are what the API
+ * serializes; the client renders them and never derives. No watch history
+ * and no "watched" flag exist anywhere in this model, by design.
+ */
+
+export type MediaKind = 'documentary' | 'film' | 'series' | 'talk' | 'short';
+
+export type WatchAccess = 'free' | 'subscription' | 'rent' | 'buy' | 'unknown';
+
+export interface WatchLink {
+  provider: string;
+  url: string;
+  access: WatchAccess;
+}
+
+export type MediaActionType = 'petition' | 'donate' | 'pledge' | 'volunteer' | 'guide' | 'learn';
+
+export interface MediaAction {
+  /** "Sign the petition" */
+  label: string;
+  url: string;
+  type: MediaActionType;
+  /** Organisation name as written on its own site. */
+  org?: string | null;
+}
+
+/** Counts only, never who. */
+export interface MediaStats {
+  saves: number;
+  moved: number;
+  acted: number;
+}
+
+export interface MediaExternalIds {
+  tmdb?: string;
+  wikidata?: string;
+  imdb?: string;
+}
+
+export interface MediaItem {
+  id: string;
+  slug: string;
+  title: string;
+  kind: MediaKind;
+  year: number | null;
+  /** YYYY-MM-DD */
+  releaseDate: string | null;
+  synopsis: string;
+  tagline: string | null;
+  /** Null until the media CDN exists; the app draws a generated poster instead. */
+  posterUrl: string | null;
+  backdropUrl: string | null;
+  runtimeMinutes: number | null;
+  contentRating: string | null;
+  originalLanguage: string | null;
+  directors: string[];
+  featuring: string[];
+  /** From TMDB. */
+  genres: string[];
+  /** Topic vocabulary plus free tags. `tmdb` and the JustWatch tag are attribution, shown as text. */
+  tags: string[];
+  /** e.g. "graphic footage", "animal death" */
+  contentWarnings: string[];
+  /** TMDB, one decimal. */
+  rating: number | null;
+  ratingCount: number | null;
+  watchLinks: WatchLink[];
+  trailerYoutubeId: string | null;
+  officialSite: string | null;
+  actions: MediaAction[];
+  externalIds: MediaExternalIds;
+  featured: boolean;
+  sourceUrl: string | null;
+  createdAt: string;
+  stats: MediaStats;
+}
+
+export type MediaReactionType = 'moved' | 'acted';
+
+/** Only on `GET /media/:slug` when the request carries a valid session. */
+export interface MediaViewer {
+  saved: boolean;
+  reactions: MediaReactionType[];
+}
+
+export interface MediaRow {
+  /** 'collection:start-here' | 'auto:free' | 'auto:tag:ethics' */
+  key: string;
+  name: string;
+  description: string | null;
+  kind: 'collection' | 'auto';
+  /** Collection slug for the "See all" link; null on automatic rows. */
+  slug: string | null;
+  /** At most 12. */
+  items: MediaItem[];
+}
+
+export interface MediaCollection {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  order: number;
+  /** Ordered as the editor set them. */
+  items: MediaItem[];
+}
+
+export interface MediaHomeResponse {
+  /** Published featured items, at most 6, ordered per UTC day so both clients agree. */
+  hero: MediaItem[];
+  rows: MediaRow[];
+}
+
+/** `{ media, viewer? }`. `api.get` returns envelopes as they arrive, so this one is typed whole. */
+export interface MediaDetailResponse {
+  media: MediaItem;
+  viewer?: MediaViewer;
+}
+
+export type MediaSort = 'featured' | 'release' | 'title' | 'rating' | 'runtime';
+
+export interface MediaQuery {
+  /** 2 to 80 characters; anything shorter is not sent. */
+  q?: string;
+  kind?: MediaKind;
+  tag?: string;
+  year?: number;
+  /** Only items with a `free` watch link. */
+  free?: boolean;
+  maxRuntime?: number;
+  sort?: MediaSort;
+  cursor?: string;
+  /** Max 100, default 24. */
+  limit?: number;
+}
+
+export interface MediaReactionResponse {
+  stats: MediaStats;
+  viewer: MediaViewer;
+}

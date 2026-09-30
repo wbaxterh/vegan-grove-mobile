@@ -26,6 +26,11 @@
  *    files, no font CDNs, no `expo-font`.
  * 8. The light palette values marked "proposed" are not yet in the spec. Change
  *    them here only, and update SCAFFOLD-SPEC section 2 when they are ratified.
+ * 9. `posterBg`, `posterText`, `posterAccent` and `scrim` are the same in both
+ *    schemes. Generated poster art and the darkening layer over a backdrop
+ *    photo are always dark, like real poster artwork, so neon green stays
+ *    legible on them in light mode too. They are the only sanctioned way to
+ *    draw neon green outside dark mode; never use them for a screen surface.
  */
 
 import { Platform } from 'react-native';
@@ -66,6 +71,14 @@ export interface ThemeColors {
   danger: string;
   /** Hairline borders and dividers. */
   border: string;
+  /** Surface of a generated poster and of a trailer frame. Dark in both schemes (policy 9). */
+  posterBg: string;
+  /** Text drawn on `posterBg`. */
+  posterText: string;
+  /** The accent bar and glyph on a generated poster. */
+  posterAccent: string;
+  /** Darkening layer over a backdrop photo; used with an `opacity` style, never as a fill. */
+  scrim: string;
 }
 
 export const themes: Record<ColorScheme, ThemeColors> = {
@@ -81,6 +94,10 @@ export const themes: Record<ColorScheme, ThemeColors> = {
     danger: brand.danger,
     // Derived from --vg-text at 14% so it tracks the text color, not a new hex.
     border: 'rgba(230, 242, 234, 0.14)',
+    posterBg: brand.surface,
+    posterText: brand.text,
+    posterAccent: brand.primaryDark,
+    scrim: brand.bg,
   },
   light: {
     // Proposed light palette (see policy item 8). Text and border reuse dark
@@ -95,6 +112,11 @@ export const themes: Record<ColorScheme, ThemeColors> = {
     accent2: brand.accent2,
     danger: brand.danger,
     border: 'rgba(11, 15, 12, 0.12)',
+    // Poster art stays dark in light mode (policy 9).
+    posterBg: brand.surface,
+    posterText: brand.text,
+    posterAccent: brand.primaryDark,
+    scrim: brand.bg,
   },
 };
 

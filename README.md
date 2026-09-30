@@ -27,7 +27,10 @@ flowchart TB
   GATE -->|anonymous| AUTH["(auth): welcome, login, register, magic-link"]
   GATE -->|authenticated| TABS["(tabs): home, places, events, feed, messages"]
   TABS --> PROF["profile stack: index, edit, settings, privacy, account"]
+  TABS -->|Learn step| MEDIA["media stack: index, explore, [slug], collections/[slug]"]
   TABS --> IVY["companion modal (SSE)"]
+  MEDIA --> QUERY
+  MEDIA -->|click to load, youtube-nocookie| WEBVIEW["react-native-webview (trailer only)"]
   TABS --> MAP["MapLibre (OpenFreeMap liberty)"]
   TABS --> NOTIF["expo-notifications: soft-ask, then OS prompt, then POST /push-tokens"]
   AUTH --> CLIENT
@@ -100,16 +103,18 @@ app/                     expo-router routes; every file is a screen, _layout.tsx
   (auth)/                welcome, login, register, magic-link (deep link vegangrove://magic-link?token=)
   (tabs)/                index (home), places, events, feed, messages
   profile/               index, edit, settings, privacy, account (hard delete); hidden from the tab bar
+  media/                 index (hero and shelves), explore (search grid), [slug] (title), collections/[slug]; from Home's Learn step
   companion.tsx          Ivy, streaming SSE
 src/
-  constants/             api.ts (base URL and the ENDPOINTS registry), areas.ts
-  lib/api/               client.ts plus auth, me, places, events, companion modules and types
+  constants/             api.ts (base URL and the ENDPOINTS registry), areas.ts, places.ts, media.ts
+  lib/api/               client.ts plus auth, me, places, events, media, companion modules and types
   lib/stores/            authStore.ts (zustand): status, token, user, restore, login, logout
   lib/notifications/     soft-ask with a seven-day cooldown, then OS prompt, then token register and unregister
   lib/images/            stripExif.ts, the only path an image takes off the device
-  lib/query/             the TanStack Query client
+  lib/links.ts           openExternal: only http(s) URLs from the API ever leave the app
+  lib/query/             the TanStack Query client; media.ts holds the media keys and the save and reaction mutations
   theme/                 tokens.ts (the --vg-* set) and ThemeProvider.tsx; no hex anywhere else
-  components/            ui/, map/PlacesMap.tsx, composer/PostComposer.tsx, notifications/SoftAskCard.tsx
+  components/            ui/, map/, media/ (poster, shelf, hero, trailer, credits), composer/, notifications/
 scripts/                 check-prod-ready.sh, gen-brand-assets.mjs
 assets/images/           icon, adaptive icon layers, splash, notification icon (generated placeholders)
 app.config.ts            bundle id, scheme, permission strings, plugins, env-sourced values
@@ -122,6 +127,7 @@ eas-build-pre-install.sh EAS lifecycle hook that runs the release guard on store
 - Auth screens call the API and store the session: email and password register and login, and magic link (request by email or arrive through the deep link and verify). `AuthGate` restores on cold start, re-validates on foreground, and only a real `401` ends a session; a flaky network never logs a member out.
 - Places: the MapLibre map centered on Southern California. Markers come from `GET /api/places/map-pins?bbox=` (id, name, type, level, chain, location only) and the list from `GET /api/places?bbox=`, both through TanStack Query as the viewport settles and both under the same filters: fully vegan by default, vegan options and chains opt-in, type chips with sanctuaries and gardens first. Tapping a marker opens a sheet with hours, phone, website, and OpenStreetMap attribution. A list toggle and a center-on-me action that moves the camera and nothing else.
 - Profile stack: view, edit (handle, home area, interests through `PATCH /api/me`), the two privacy switches, settings (theme, push permission, log out), and account (sessions list with revoke, hard delete behind a double confirmation).
+- Media library, from Home's Learn step: a hero and the shelves from `GET /api/media/home` (one shelf from `GET /api/media` while that route is not deployed), Explore with a debounced search, kind chips, a sort toggle and a cursor-paged 3-column grid, and the title screen with save and the two reactions (signed-in only, optimistic, counts never identities), where to watch with an access badge per provider, a click-to-load trailer in a `react-native-webview` on `youtube-nocookie.com`, credits, content warnings, take-action links and a related shelf. A generated poster stands in whenever `posterUrl` is null. No view counting and no watch history, by contract.
 - Companion: the modal streams replies from `POST /api/companion/chat` over SSE.
 - Notifications: the in-app soft-ask, the OS prompt only after a yes, token registration on sign-in and foreground, unregistration before logout.
 - The post composer re-encodes every picked image through `stripExif` before it could leave the device.
