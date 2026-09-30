@@ -214,6 +214,14 @@ export type EventType =
   | 'meeting'
   | 'other';
 
+export interface EventHost {
+  type: 'organization' | 'grove';
+  id: string;
+  name: string;
+  slug: string;
+  verified?: boolean;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -229,7 +237,9 @@ export interface Event {
   detailsAfterRsvp: boolean;
   hostType: 'grove' | 'organization';
   hostId: string;
+  /** Kept for older fixtures; the API sends `host`. */
   hostName?: string;
+  host?: EventHost | null;
   description: string;
   coverKey?: string | null;
   visibility: 'public' | 'grove' | 'friends';

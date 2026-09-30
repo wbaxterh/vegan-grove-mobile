@@ -61,7 +61,9 @@ function EventCard({ event }: EventCardProps) {
       <Text style={[styles.title, { color: colors.text }]}>{event.title}</Text>
       <Text style={[styles.meta, { color: colors.muted }]}>{where}</Text>
       <Text style={[styles.meta, { color: colors.muted }]}>
-        {event.hostName ? `Hosted by ${event.hostName}` : `Hosted by a ${event.hostType}`}
+        {(event.host?.name ?? event.hostName)
+          ? `Hosted by ${event.host?.name ?? event.hostName}`
+          : `Hosted by a ${event.hostType}`}
         {` · ${event.rsvpCount} going`}
       </Text>
     </Card>
